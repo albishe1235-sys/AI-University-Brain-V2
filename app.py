@@ -266,7 +266,54 @@ def search_lectures(question):
         )).fetchall()
 
     return results
+# إنشاء جلسة تسجيل الدخول
+def create_login_session(user_id):
+    token = secrets.token_urlsafe(32)
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
 
+    now = datetime.now()
+    expires = now + timedelta(days=30)
+
+    with get_connection() as conn:
+        conn.execute("""
+            INSERT INTO login_sessions
+            (user_id, token_hash, expires_at, created_at)
+            VALUES (?, ?, ?, ?)
+        """, (
+            user_id,
+            token_hash,
+            expires.isoformat(),
+            now.isoformat()
+        ))
+
+    return token
+
+
+# التحقق من جلسة تسجيل الدخول
+def get_login_session(token):
+    if not token:
+        return None
+
+    token_hash = hashlib.sha256(token.encode()).hexdigest()
+
+    with get_connection() as conn:
+        session = conn.execute("""
+            SELECT users.id, users.username, users.email, users.role
+            FROM login_sessions
+            JOIN users ON users.id = login_sessions.user_id
+            WHERE login_sessions.token_hash = ?
+              AND login_sessions.expires_at > ?
+        """, (token_hash, datetime.now().isoformat())).fetchone()
+
+    if session:
+        return {
+            "id": session[0],
+            "username": session[1],
+            "email": session[2],
+            "role": session[3]
+        }
+
+    return None
 
 # تشغيل قاعدة البيانات
 initialize_database()
