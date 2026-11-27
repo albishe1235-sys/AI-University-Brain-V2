@@ -54,7 +54,21 @@ def initialize_database():
                 upload_date TEXT
             )
         """)
+        columns = [
+            row[1] for row in conn.execute(
+                "PRAGMA table_info(lectures)"
+            ).fetchall()
+        ]
 
+        if "file_data" not in columns:
+            conn.execute(
+                "ALTER TABLE lectures ADD COLUMN file_data BLOB"
+            )
+
+        if "file_type" not in columns:
+            conn.execute(
+                "ALTER TABLE lectures ADD COLUMN file_type TEXT"
+            )
 
 # تشفير كلمة المرور
 def hash_password(password, salt):
@@ -154,7 +168,7 @@ def search_lectures(question):
 
     with get_connection() as conn:
         results = conn.execute("""
-            SELECT title, subject, doctor, content
+            SELECT title, subject, doctor, content, file_data, file_type
             FROM lectures
             WHERE content LIKE ?
                OR title LIKE ?
@@ -384,6 +398,21 @@ else:
                         st.write("الدكتور:", result[2])
                         st.write("محتوى المحاضرة:")
                         st.write(result[3])
+                        if result[4]:
+    mime_types = {
+        "pdf": "application/pdf",
+        "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "txt": "text/plain",
+        "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+        "csv": "text/csv"
+    }
+
+    st.download_button(
+        label="📥 تحميل المحاضرة الأصلية",
+        data=result[4],
+        file_name=result[0],
+        mime=mime_types.get(result[5], "application/octet-stream")
+    )
 
             else:
                 st.warning("لم يتم العثور على نتائج")
@@ -415,23 +444,28 @@ else:
 
                 content = extract_text(uploaded_file)
 
-                with get_connection() as conn:
+                file_data = uploaded_file.getvalue()
+file_type = uploaded_file.name.split(".")[-1].lower()
 
-                    conn.execute("""
-                        INSERT INTO lectures
-                        (title, university, department, stage,
-                         subject, doctor, content, upload_date)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                    """, (
-                        uploaded_file.name,
-                        university,
-                        department,
-                        stage,
-                        subject,
-                        user["username"],
-                        content,
-                        datetime.now().isoformat()
-                    ))
+with get_connection() as conn:
+    conn.execute("""
+        INSERT INTO lectures
+        (title, university, department, stage,
+         subject, doctor, content, upload_date,
+         file_data, file_type)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        uploaded_file.name,
+        university,
+        department,
+        stage,
+        subject,
+        user["username"],
+        content,
+        datetime.now().isoformat(),
+        file_data,
+        file_type
+    )) 
 
                 st.success("تم رفع المحاضرة وحفظها بنجاح")
 
