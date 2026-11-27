@@ -189,7 +189,7 @@ if st.session_state.user is None:
     # إنشاء حساب جديد
     with register_tab:
 
-        st.subheader("إنشاء حساب جديد")
+        st.subheader(".إنشاء حساب جديد")
 
         username = st.text_input(
             "الاسم",
