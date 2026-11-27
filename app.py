@@ -20,6 +20,23 @@ st.set_page_config(
 
 st.markdown("""
 <style>
+/* جعل الكتابة باللون الأسود */
+.stApp,
+.stApp label,
+.stApp p,
+.stApp h1,
+.stApp h2,
+.stApp h3,
+.stTabs button,
+.stTextInput input,
+.stMarkdown {
+    color: #000000 !important;
+}
+
+.stTextInput input {
+    background-color: #FFFFFF !important;
+    border: 1px solid #999999 !important;
+}
     .stApp {
         background: #F4F7FC;
         color: #172554;
@@ -297,9 +314,7 @@ if st.session_state.user is None:
             <p style="color:#64748B; font-size:17px;">
                 منصتك الذكية لإدارة المحاضرات والبحث العلمي
             </p>
-            <p style="color:#477DE0; font-weight:bold;">
-                جامعة المستقبل
-            </p>
+            
         </div>
     """, unsafe_allow_html=True)
 
@@ -421,69 +436,7 @@ if st.session_state.user is None:
                             "هذا البريد الإلكتروني مسجل مسبقاً"
                         )
 
-    # إنشاء حساب جديد
-    with register_tab:
-
-        st.subheader(".إنشاء حساب جديد")
-
-        username = st.text_input(
-            "الاسم",
-            key="register_name"
-        )
-
-        new_email = st.text_input(
-            "البريد الإلكتروني",
-            key="register_email"
-        )
-
-        new_password = st.text_input(
-            "كلمة المرور",
-            type="password",
-            key="register_password"
-        )
-
-        confirm_password = st.text_input(
-            "تأكيد كلمة المرور",
-            type="password",
-            key="confirm_password"
-        )
-
-        role = "student"
-
-        if st.button(
-            "إنشاء الحساب",
-            use_container_width=True
-        ):
-
-            if not username.strip() or not new_email.strip() or not new_password:
-                st.warning("يرجى إكمال جميع الحقول")
-
-            elif new_password != confirm_password:
-                st.error("كلمتا المرور غير متطابقتين")
-
-            elif len(new_password) < 8:
-                st.error("كلمة المرور يجب أن تكون 8 أحرف على الأقل")
-
-            else:
-
-                success = register_user(
-                    username.strip(),
-                    new_email.strip().lower(),
-                    new_password,
-                    role
-                )
-
-                if success:
-                    st.success(
-                        "تم إنشاء الحساب بنجاح، يمكنك تسجيل الدخول"
-                    )
-
-                else:
-                    st.error(
-                        "هذا البريد الإلكتروني مسجل مسبقاً"
-                    )
-
-
+    
 # لوحة المستخدم
 else:
 
