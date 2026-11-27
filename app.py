@@ -294,14 +294,7 @@ if st.session_state.user is None:
             key="confirm_password"
         )
 
-        role = st.selectbox(
-            "نوع الحساب",
-            ["student", "doctor"],
-            format_func=lambda x: {
-                "student": "طالب",
-                "doctor": "دكتور"
-            }[x]
-        )
+                role = "student"
 
         if st.button(
             "إنشاء الحساب",
@@ -372,6 +365,31 @@ else:
         col1, col2 = st.columns(2)
         col1.metric("عدد المستخدمين", users_count)
         col2.metric("عدد المحاضرات", lectures_count)
+        st.divider()
+        st.subheader("👨‍🏫 إدارة صلاحيات الدكاترة")
+
+        with get_connection() as conn:
+            students = conn.execute(
+                "SELECT id, username, email FROM users WHERE role = 'student'"
+            ).fetchall()
+
+        if students:
+            selected_student = st.selectbox(
+                "اختر الطالب لمنحه صلاحية دكتور",
+                students,
+                format_func=lambda x: f"{x[1]} - {x[2]}"
+            )
+                        if st.button("منح صلاحية دكتور"):
+                with get_connection() as conn:
+                    conn.execute(
+                        "UPDATE users SET role = 'doctor' WHERE id = ?",
+                        (selected_student[0],)
+                    )
+
+                st.success(
+                    f"تم منح {selected_student[1]} صلاحية دكتور"
+                )
+                st.rerun()
 
     
     st.divider()
