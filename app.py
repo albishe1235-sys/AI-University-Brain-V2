@@ -375,8 +375,7 @@ else:
 
     st.divider()
 
-    # البحث عن المحاضرات
-    st.subheader("🔎 البحث في المحاضرات")
+        st.subheader("🔎 البحث في المحاضرات")
 
     question = st.text_input(
         "اكتب كلمة أو سؤالاً للبحث"
@@ -398,7 +397,8 @@ else:
                         st.write("الدكتور:", result[2])
                         st.write("محتوى المحاضرة:")
                         st.write(result[3])
-                                                if result[4]:
+
+                        if result[4]:
                             mime_types = {
                                 "pdf": "application/pdf",
                                 "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -413,11 +413,6 @@ else:
                                 file_name=result[0],
                                 mime=mime_types.get(result[5], "application/octet-stream")
                             )
-        label="📥 تحميل المحاضرة الأصلية",
-        data=result[4],
-        file_name=result[0],
-        mime=mime_types.get(result[5], "application/octet-stream")
-    )
 
             else:
                 st.warning("لم يتم العثور على نتائج")
