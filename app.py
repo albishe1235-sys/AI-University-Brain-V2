@@ -294,7 +294,7 @@ if st.session_state.user is None:
             key="confirm_password"
         )
 
-                role = "student"
+        role = "student"
 
         if st.button(
             "إنشاء الحساب",
