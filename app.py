@@ -135,7 +135,37 @@ def search_lectures(question):
 
 # تشغيل قاعدة البيانات
 initialize_database()
+def create_admin_account():
+    try:
+        admin_password = st.secrets["ADMIN_PASSWORD"]
 
+        with get_connection() as conn:
+            existing = conn.execute(
+                "SELECT id FROM users WHERE email = ?",
+                (ADMIN_EMAIL,)
+            ).fetchone()
+
+            if not existing:
+                salt = secrets.token_hex(16)
+                password_hash = hash_password(admin_password, salt)
+
+                conn.execute("""
+                    INSERT INTO users
+                    (username, email, password_hash, salt, role)
+                    VALUES (?, ?, ?, ?, ?)
+                """, (
+                    "Admin",
+                    ADMIN_EMAIL,
+                    password_hash,
+                    salt,
+                    "admin"
+                ))
+
+    except Exception:
+        st.error("تعذر إعداد حساب الأدمن. راجع إعدادات المنصة.")
+
+
+create_admin_account()
 
 # واجهة المنصة
 st.title("🎓 AI University Brain")
