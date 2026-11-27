@@ -4,7 +4,11 @@ import sqlite3
 import hashlib
 import secrets
 from datetime import datetime
-
+import csv
+from io import BytesIO, StringIO
+from pypdf import PdfReader
+from docx import Document
+from pptx import Presentation
 # إعدادات المنصة
 st.set_page_config(
     page_title="AI University Brain",
@@ -113,7 +117,38 @@ def login_user(email, password):
 
     return None
 
+# قراءة الملفات واستخراج النص
+def extract_text(uploaded_file):
+    file_type = uploaded_file.name.split(".")[-1].lower()
 
+    if file_type == "txt":
+        return uploaded_file.getvalue().decode("utf-8", errors="replace")
+
+    elif file_type == "pdf":
+        pdf = PdfReader(BytesIO(uploaded_file.getvalue()))
+        return "\n".join(
+            page.extract_text() or "" for page in pdf.pages
+        )
+
+    elif file_type == "docx":
+        doc = Document(BytesIO(uploaded_file.getvalue()))
+        return "\n".join(p.text for p in doc.paragraphs)
+
+    elif file_type == "pptx":
+        presentation = Presentation(BytesIO(uploaded_file.getvalue()))
+        return "\n".join(
+            shape.text
+            for slide in presentation.slides
+            for shape in slide.shapes
+            if shape.has_text_frame
+        )
+
+    elif file_type == "csv":
+        content = uploaded_file.getvalue().decode("utf-8-sig", errors="replace")
+        reader = csv.reader(StringIO(content))
+        return "\n".join(" | ".join(row) for row in reader)
+
+    return ""
 # البحث في المحاضرات
 def search_lectures(question):
 
@@ -361,8 +396,8 @@ else:
         st.subheader("📤 رفع محاضرة")
 
         uploaded_file = st.file_uploader(
-            "اختر ملف المحاضرة",
-            type=["txt"]
+    "اختر ملف المحاضرة",
+    type=["pdf", "docx", "txt", "pptx", "csv"]
         )
 
         university = st.text_input(
@@ -378,10 +413,7 @@ else:
 
             if uploaded_file and department and stage and subject:
 
-                content = uploaded_file.getvalue().decode(
-                    "utf-8",
-                    errors="replace"
-                )
+                content = extract_text(uploaded_file)
 
                 with get_connection() as conn:
 
