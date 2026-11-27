@@ -1,5 +1,6 @@
 
 import streamlit as st
+import extra_streamilt_components as stx
 import sqlite3
 import hashlib
 import secrets
