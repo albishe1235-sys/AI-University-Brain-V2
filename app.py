@@ -18,7 +18,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
+cookie_manager = stx.CookieManager(key="auth_cookie_manager")
 st.markdown("""
 <style>
 /* جعل الكتابة باللون الأسود */
