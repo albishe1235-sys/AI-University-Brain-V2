@@ -14,6 +14,8 @@ st.set_page_config(
 
 DB_NAME = "university.db"
 
+ADMIN_EMAIL = "b6927572@gmail.com"
+
 
 # الاتصال بقاعدة البيانات
 def get_connection():
