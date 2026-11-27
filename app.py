@@ -371,8 +371,9 @@ else:
 
         col1, col2 = st.columns(2)
         col1.metric("عدد المستخدمين", users_count)
-    col2.metric("عدد المحاضرات", lectures_count)
+        col2.metric("عدد المحاضرات", lectures_count)
 
+    
     st.divider()
 
     st.subheader("🔎 البحث في المحاضرات")
