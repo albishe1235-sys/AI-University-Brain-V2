@@ -379,7 +379,7 @@ else:
                 students,
                 format_func=lambda x: f"{x[1]} - {x[2]}"
             )
-                        if st.button("منح صلاحية دكتور"):
+        if st.button("منح صلاحية دكتور"):
                 with get_connection() as conn:
                     conn.execute(
                         "UPDATE users SET role = 'doctor' WHERE id = ?",
