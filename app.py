@@ -488,3 +488,33 @@ else:
 
             else:
                 st.warning("يرجى اختيار الملف وإكمال المعلومات")
+                        st.divider()
+        st.subheader("🗑️ حذف محاضرة")
+
+        with get_connection() as conn:
+            doctor_lectures = conn.execute(
+                "SELECT id, title, subject FROM lectures WHERE doctor = ?",
+                (user["username"],)
+            ).fetchall()
+
+        if doctor_lectures:
+
+            selected_lecture = st.selectbox(
+                "اختر المحاضرة التي تريد حذفها",
+                doctor_lectures,
+                format_func=lambda x: f"{x[1]} - {x[2]}"
+            )
+
+            if st.button("حذف المحاضرة"):
+
+                with get_connection() as conn:
+                    conn.execute(
+                        "DELETE FROM lectures WHERE id = ? AND doctor = ?",
+                        (selected_lecture[0], user["username"])
+                    )
+
+                st.success("تم حذف المحاضرة بنجاح")
+                st.rerun()
+
+        else:
+            st.info("لا توجد محاضرات مرفوعة من حسابك")
