@@ -295,7 +295,7 @@ else:
 
     st.success(f"أهلاً بك، {user['username']}")
 
-        st.write(
+    st.write(
         "نوع الحساب:",
         "أدمن" if user["role"] == "admin"
         else "طالب" if user["role"] == "student"
