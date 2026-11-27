@@ -487,8 +487,8 @@ else:
                 st.success("تم رفع المحاضرة وحفظها بنجاح")
 
             else:
-                st.warning("يرجى اختيار الملف وإكمال المعلومات")
-                        st.divider()
+               st.warning("يرجى اختيار الملف وإكمال المعلومات")
+         st.divider()
         st.subheader("🗑️ حذف محاضرة")
 
         with get_connection() as conn:
