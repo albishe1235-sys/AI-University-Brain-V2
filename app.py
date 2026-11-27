@@ -129,6 +129,17 @@ def initialize_database():
                 upload_date TEXT
             )
         """)
+        # جدول جلسات تسجيل الدخول
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS login_sessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                token_hash TEXT NOT NULL UNIQUE,
+                expires_at TEXT NOT NULL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+           )
+        """)
         columns = [
             row[1] for row in conn.execute(
                 "PRAGMA table_info(lectures)"
