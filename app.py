@@ -462,8 +462,8 @@ else:
         else "طالب" if user["role"] == "student"
         else "دكتور"
     )
-
-            if st.button("تسجيل الخروج"):
+     
+    if st.button("تسجيل الخروج"):
         cookie_manager.delete("auth_token")
 
         with get_connection() as conn:
