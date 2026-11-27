@@ -398,16 +398,21 @@ else:
                         st.write("الدكتور:", result[2])
                         st.write("محتوى المحاضرة:")
                         st.write(result[3])
-                        if result[4]:
-    mime_types = {
-        "pdf": "application/pdf",
-        "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "txt": "text/plain",
-        "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-        "csv": "text/csv"
-    }
+                                                if result[4]:
+                            mime_types = {
+                                "pdf": "application/pdf",
+                                "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                                "txt": "text/plain",
+                                "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                                "csv": "text/csv"
+                            }
 
-    st.download_button(
+                            st.download_button(
+                                label="📥 تحميل المحاضرة الأصلية",
+                                data=result[4],
+                                file_name=result[0],
+                                mime=mime_types.get(result[5], "application/octet-stream")
+                            )
         label="📥 تحميل المحاضرة الأصلية",
         data=result[4],
         file_name=result[0],
