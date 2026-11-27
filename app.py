@@ -305,7 +305,28 @@ else:
         st.session_state.user = None
         st.rerun()
 
+        if user["role"] == "admin":
+        st.divider()
+        st.header("🛠️ لوحة تحكم الأدمن")
+        st.success("أنت مسؤول المنصة")
+
+        with get_connection() as conn:
+            users_count = conn.execute(
+                "SELECT COUNT(*) FROM users"
+            ).fetchone()[0]
+
+            lectures_count = conn.execute(
+                "SELECT COUNT(*) FROM lectures"
+            ).fetchone()[0]
+
+        col1, col2 = st.columns(2)
+
+        col1.metric("عدد المستخدمين", users_count)
+        col2.metric("عدد المحاضرات", lectures_count)
+
     st.divider()
+
+    # البحث عن المحاضرات
 
     # البحث عن المحاضرات
     st.subheader("🔎 البحث في المحاضرات")
