@@ -417,16 +417,15 @@ else:
             else:
                 st.warning("لم يتم العثور على نتائج")
 
-    # رفع المحاضرات للدكتور
+        # رفع المحاضرات للدكتور
     if user["role"] == "doctor":
 
         st.divider()
-
         st.subheader("📤 رفع محاضرة")
 
         uploaded_file = st.file_uploader(
-    "اختر ملف المحاضرة",
-    type=["pdf", "docx", "txt", "pptx", "csv"]
+            "اختر ملف المحاضرة",
+            type=["pdf", "docx", "txt", "pptx", "csv"]
         )
 
         university = st.text_input(
@@ -443,33 +442,30 @@ else:
             if uploaded_file and department and stage and subject:
 
                 content = extract_text(uploaded_file)
-
                 file_data = uploaded_file.getvalue()
-file_type = uploaded_file.name.split(".")[-1].lower()
+                file_type = uploaded_file.name.split(".")[-1].lower()
 
-with get_connection() as conn:
-    conn.execute("""
-        INSERT INTO lectures
-        (title, university, department, stage,
-         subject, doctor, content, upload_date,
-         file_data, file_type)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        uploaded_file.name,
-        university,
-        department,
-        stage,
-        subject,
-        user["username"],
-        content,
-        datetime.now().isoformat(),
-        file_data,
-        file_type
-    )) 
+                with get_connection() as conn:
+                    conn.execute("""
+                        INSERT INTO lectures
+                        (title, university, department, stage,
+                         subject, doctor, content, upload_date,
+                         file_data, file_type)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        uploaded_file.name,
+                        university,
+                        department,
+                        stage,
+                        subject,
+                        user["username"],
+                        content,
+                        datetime.now().isoformat(),
+                        file_data,
+                        file_type
+                    ))
 
                 st.success("تم رفع المحاضرة وحفظها بنجاح")
 
             else:
-                st.warning(
-                    "يرجى اختيار الملف وإكمال المعلومات"
-                )
+                st.warning("يرجى اختيار الملف وإكمال المعلومات")
