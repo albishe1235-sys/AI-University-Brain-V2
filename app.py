@@ -312,6 +312,12 @@ st.divider()
 if "user" not in st.session_state:
     st.session_state.user = None
 
+if st.session_state.user is None:
+    saved_token = cookie_manager.get("auth_token")
+    restored_user = get_login_session(saved_token)
+
+    if restored_user:
+        st.session_state.user = restored_user
 
 # صفحة الدخول والتسجيل
 
@@ -354,7 +360,7 @@ if st.session_state.user is None:
             "📝 إنشاء حساب جديد"
         ])
 
-        # تسجيل الدخول
+                # تسجيل الدخول
         with login_tab:
 
             st.subheader("أهلاً بعودتك")
@@ -378,6 +384,14 @@ if st.session_state.user is None:
                 )
 
                 if user:
+                    token = create_login_session(user["id"])
+
+                    cookie_manager.set(
+                        "auth_token",
+                        token,
+                        expires_at=datetime.now() + timedelta(days=30)
+                    )
+
                     st.session_state.user = user
                     st.rerun()
 
@@ -385,69 +399,6 @@ if st.session_state.user is None:
                     st.error(
                         "البريد الإلكتروني أو كلمة المرور غير صحيحة"
                     )
-
-        # إنشاء حساب جديد
-        with register_tab:
-
-            st.subheader("انضم إلى منصتنا")
-
-            username = st.text_input(
-                "الاسم الكامل",
-                key="register_name"
-            )
-
-            new_email = st.text_input(
-                "البريد الإلكتروني",
-                key="register_email"
-            )
-
-            new_password = st.text_input(
-                "كلمة المرور",
-                type="password",
-                key="register_password"
-            )
-
-            confirm_password = st.text_input(
-                "تأكيد كلمة المرور",
-                type="password",
-                key="confirm_password"
-            )
-
-            role = "student"
-
-            if st.button(
-                "إنشاء حساب جديد",
-                use_container_width=True
-            ):
-
-                if not username.strip() or not new_email.strip() or not new_password:
-                    st.warning("يرجى إكمال جميع الحقول")
-
-                elif new_password != confirm_password:
-                    st.error("كلمتا المرور غير متطابقتين")
-
-                elif len(new_password) < 8:
-                    st.error("كلمة المرور يجب أن تكون 8 أحرف على الأقل")
-
-                else:
-
-                    success = register_user(
-                        username.strip(),
-                        new_email.strip().lower(),
-                        new_password,
-                        role
-                    )
-
-                    if success:
-                        st.success(
-                            "تم إنشاء الحساب بنجاح، يمكنك تسجيل الدخول"
-                        )
-
-                    else:
-                        st.error(
-                            "هذا البريد الإلكتروني مسجل مسبقاً"
-                        )
-
     
 # لوحة المستخدم
 else:
