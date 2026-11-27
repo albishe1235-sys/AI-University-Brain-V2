@@ -464,8 +464,16 @@ else:
     )
 
     if st.button("تسجيل الخروج"):
-        st.session_state.user = None
-        st.rerun()
+    cookie_manager.delete("auth_token")
+
+    with get_connection() as conn:
+        conn.execute(
+            "DELETE FROM login_sessions WHERE user_id = ?",
+            (st.session_state.user["id"],)
+        )
+
+    st.session_state.user = None
+    st.rerun()
 
     if user["role"] == "admin":
         st.divider()
