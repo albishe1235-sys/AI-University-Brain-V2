@@ -295,17 +295,18 @@ else:
 
     st.success(f"أهلاً بك، {user['username']}")
 
-    st.write(
+        st.write(
         "نوع الحساب:",
-        "طالب" if user["role"] == "student" else "دكتور"
+        "أدمن" if user["role"] == "admin"
+        else "طالب" if user["role"] == "student"
+        else "دكتور"
     )
 
     if st.button("تسجيل الخروج"):
-
         st.session_state.user = None
         st.rerun()
 
-        if user["role"] == "admin":
+    if user["role"] == "admin":
         st.divider()
         st.header("🛠️ لوحة تحكم الأدمن")
         st.success("أنت مسؤول المنصة")
@@ -320,13 +321,10 @@ else:
             ).fetchone()[0]
 
         col1, col2 = st.columns(2)
-
         col1.metric("عدد المستخدمين", users_count)
         col2.metric("عدد المحاضرات", lectures_count)
 
     st.divider()
-
-    # البحث عن المحاضرات
 
     # البحث عن المحاضرات
     st.subheader("🔎 البحث في المحاضرات")
