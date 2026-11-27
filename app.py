@@ -254,7 +254,7 @@ def search_lectures(question):
 
     with get_connection() as conn:
         results = conn.execute("""
-            SELECT title, subject, doctor, content, file_data, file_type
+            SELECT title, subject, doctor, content, file_data, file_type, id
             FROM lectures
             WHERE content LIKE ?
                OR title LIKE ?
