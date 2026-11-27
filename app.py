@@ -555,7 +555,8 @@ else:
                                 label="📥 تحميل المحاضرة الأصلية",
                                 data=result[4],
                                 file_name=result[0],
-                                mime=mime_types.get(result[5], "application/octet-stream")
+                                mime=mime_types.get(result[5], "application/octet-stream"),
+key=f"download_{result[0]}_{result[1]}"
                             )
 
             else:
