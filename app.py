@@ -488,7 +488,7 @@ else:
 
             else:
                st.warning("يرجى اختيار الملف وإكمال المعلومات")
-         st.divider()
+        st.divider()
         st.subheader("🗑️ حذف محاضرة")
 
         with get_connection() as conn:
