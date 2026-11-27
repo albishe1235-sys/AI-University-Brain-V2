@@ -4,7 +4,7 @@ import extra_streamlit_components as stx
 import sqlite3
 import hashlib
 import secrets
-from datetime import datetime
+from datetime import datetime, timedelta
 import csv
 from io import BytesIO, StringIO
 from pypdf import PdfReader
@@ -472,9 +472,6 @@ else:
 
         st.session_state.user = None
         st.rerun()
-
-    st.session_state.user = None
-    st.rerun()
 
     if user["role"] == "admin":
         st.divider()
