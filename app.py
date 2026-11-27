@@ -10,11 +10,68 @@ from pypdf import PdfReader
 from docx import Document
 from pptx import Presentation
 # إعدادات المنصة
+
 st.set_page_config(
     page_title="AI University Brain",
     page_icon="🎓",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
+
+st.markdown("""
+<style>
+    .stApp {
+        background: #F4F7FC;
+        color: #172554;
+        direction: rtl;
+    }
+
+    [data-testid="stSidebar"] {
+        background: #102A56;
+    }
+
+    [data-testid="stSidebar"] * {
+        color: white;
+    }
+
+    h1, h2, h3 {
+        color: #163B70;
+        font-weight: 800;
+    }
+
+    .stButton > button {
+        background: linear-gradient(90deg, #2457A7, #477DE0);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 22px;
+        font-weight: bold;
+    }
+
+    .stButton > button:hover {
+        background: #173F7A;
+        color: white;
+        border: none;
+    }
+
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
+        border-radius: 10px;
+    }
+
+    [data-testid="stMetric"] {
+        background: white;
+        padding: 18px;
+        border-radius: 14px;
+        border: 1px solid #E0E8F5;
+    }
+
+    [data-testid="stExpander"] {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #DCE6F5;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 DB_NAME = "university.db"
 
@@ -228,44 +285,141 @@ if "user" not in st.session_state:
 
 
 # صفحة الدخول والتسجيل
+
 if st.session_state.user is None:
 
-    login_tab, register_tab = st.tabs([
-        "تسجيل الدخول",
-        "إنشاء حساب جديد"
-    ])
+    st.markdown("""
+        <div style="text-align:center; padding:35px 10px 20px;">
+            <div style="font-size:55px;">🎓</div>
+            <h1 style="color:#163B70; font-size:36px;">
+                AI University Brain
+            </h1>
+            <p style="color:#64748B; font-size:17px;">
+                منصتك الذكية لإدارة المحاضرات والبحث العلمي
+            </p>
+            <p style="color:#477DE0; font-weight:bold;">
+                جامعة المستقبل
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
 
-    # تسجيل الدخول
-    with login_tab:
+    space1, center, space2 = st.columns([1, 2, 1])
 
-        st.subheader("تسجيل الدخول")
+    with center:
 
-        email = st.text_input(
-            "البريد الإلكتروني",
-            key="login_email"
-        )
+        st.markdown("""
+            <div style="
+                background:white;
+                padding:12px;
+                border-radius:16px;
+                text-align:center;
+                border:1px solid #DCE6F5;
+                margin-bottom:15px;">
+                <h3 style="color:#163B70;">مرحباً بك 👋</h3>
+                <p style="color:#64748B;">
+                    سجّل دخولك أو أنشئ حساباً جديداً للمتابعة
+                </p>
+            </div>
+        """, unsafe_allow_html=True)
 
-        password = st.text_input(
-            "كلمة المرور",
-            type="password",
-            key="login_password"
-        )
+        login_tab, register_tab = st.tabs([
+            "🔐 تسجيل الدخول",
+            "📝 إنشاء حساب جديد"
+        ])
 
-        if st.button("دخول", use_container_width=True):
+        # تسجيل الدخول
+        with login_tab:
 
-            user = login_user(
-                email.strip().lower(),
-                password
+            st.subheader("أهلاً بعودتك")
+
+            email = st.text_input(
+                "البريد الإلكتروني",
+                key="login_email"
             )
 
-            if user:
-                st.session_state.user = user
-                st.rerun()
+            password = st.text_input(
+                "كلمة المرور",
+                type="password",
+                key="login_password"
+            )
 
-            else:
-                st.error(
-                    "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+            if st.button("دخول إلى المنصة", use_container_width=True):
+
+                user = login_user(
+                    email.strip().lower(),
+                    password
                 )
+
+                if user:
+                    st.session_state.user = user
+                    st.rerun()
+
+                else:
+                    st.error(
+                        "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+                    )
+
+        # إنشاء حساب جديد
+        with register_tab:
+
+            st.subheader("انضم إلى منصتنا")
+
+            username = st.text_input(
+                "الاسم الكامل",
+                key="register_name"
+            )
+
+            new_email = st.text_input(
+                "البريد الإلكتروني",
+                key="register_email"
+            )
+
+            new_password = st.text_input(
+                "كلمة المرور",
+                type="password",
+                key="register_password"
+            )
+
+            confirm_password = st.text_input(
+                "تأكيد كلمة المرور",
+                type="password",
+                key="confirm_password"
+            )
+
+            role = "student"
+
+            if st.button(
+                "إنشاء حساب جديد",
+                use_container_width=True
+            ):
+
+                if not username.strip() or not new_email.strip() or not new_password:
+                    st.warning("يرجى إكمال جميع الحقول")
+
+                elif new_password != confirm_password:
+                    st.error("كلمتا المرور غير متطابقتين")
+
+                elif len(new_password) < 8:
+                    st.error("كلمة المرور يجب أن تكون 8 أحرف على الأقل")
+
+                else:
+
+                    success = register_user(
+                        username.strip(),
+                        new_email.strip().lower(),
+                        new_password,
+                        role
+                    )
+
+                    if success:
+                        st.success(
+                            "تم إنشاء الحساب بنجاح، يمكنك تسجيل الدخول"
+                        )
+
+                    else:
+                        st.error(
+                            "هذا البريد الإلكتروني مسجل مسبقاً"
+                        )
 
     # إنشاء حساب جديد
     with register_tab:
