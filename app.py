@@ -317,6 +317,7 @@ def get_login_session(token):
 
 # تشغيل قاعدة البيانات
 initialize_database()
+
 def create_admin_account():
     try:
         admin_password = st.secrets["ADMIN_PASSWORD"]
@@ -342,8 +343,10 @@ def create_admin_account():
                     salt,
                     "admin"
                 ))
-        except Exception as e:
-          st.error(f"خطأ إعداد الأدمن: {e}")
+
+    except Exception as e:
+        st.error(f"خطأ إعداد الأدمن: {e}")
+
 
 create_admin_account()
 
