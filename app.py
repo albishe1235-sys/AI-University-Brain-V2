@@ -1,7 +1,7 @@
 
 import streamlit as st
 import extra_streamlit_components as stx
-import sqlite3
+import psycopg2
 import hashlib
 import secrets
 from datetime import datetime, timedelta
@@ -102,64 +102,24 @@ ADMIN_EMAIL = "b6927572@gmail.com"
 
 
 # الاتصال بقاعدة البيانات
+class DatabaseConnection(psycopg2.extensions.connection):
+    def execute(self, query, vars=None):
+        cur = self.cursor()
+        cur.execute(query, vars)
+        return cur
+
+
 def get_connection():
-    return sqlite3.connect(DB_NAME)
+    return psycopg2.connect(
+        st.secrets["DATABASE_URL"],
+        connection_factory=DatabaseConnection
+    )
 
 
 # إنشاء الجداول
 def initialize_database():
-    with get_connection() as conn:
-
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                username TEXT NOT NULL,
-                email TEXT UNIQUE NOT NULL,
-                password_hash TEXT NOT NULL,
-                salt TEXT NOT NULL,
-                role TEXT NOT NULL
-            )
-        """)
-
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS lectures (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                university TEXT,
-                department TEXT,
-                stage TEXT,
-                subject TEXT,
-                doctor TEXT,
-                content TEXT,
-                upload_date TEXT
-            )
-        """)
-        # جدول جلسات تسجيل الدخول
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS login_sessions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER NOT NULL,
-                token_hash TEXT NOT NULL UNIQUE,
-                expires_at TEXT NOT NULL,
-                created_at TEXT NOT NULL,
-                FOREIGN KEY (user_id) REFERENCES users(id)
-           )
-        """)
-        columns = [
-            row[1] for row in conn.execute(
-                "PRAGMA table_info(lectures)"
-            ).fetchall()
-        ]
-
-        if "file_data" not in columns:
-            conn.execute(
-                "ALTER TABLE lectures ADD COLUMN file_data BLOB"
-            )
-
-        if "file_type" not in columns:
-            conn.execute(
-                "ALTER TABLE lectures ADD COLUMN file_type TEXT"
-            )
+    pass
+            
 
 # تشفير كلمة المرور
 def hash_password(password, salt):
@@ -182,7 +142,7 @@ def register_user(username, email, password, role):
             conn.execute("""
                 INSERT INTO users
                 (username, email, password_hash, salt, role)
-                VALUES (?, ?, ?, ?, ?)
+                VALUES (%s, %s, %s, %s, %s)
             """, (
                 username,
                 email,
@@ -193,7 +153,7 @@ def register_user(username, email, password, role):
 
         return True
 
-    except sqlite3.IntegrityError:
+    except psycopg2.IntegrityError:
         return False
 
 
@@ -204,7 +164,7 @@ def login_user(email, password):
         user = conn.execute("""
             SELECT id, username, email, password_hash, salt, role
             FROM users
-            WHERE email = ?
+            WHERE email = %s
         """, (email,)).fetchone()
 
     if user:
@@ -261,9 +221,9 @@ def search_lectures(question):
         results = conn.execute("""
             SELECT title, subject, doctor, content, file_data, file_type, id
             FROM lectures
-            WHERE content LIKE ?
-               OR title LIKE ?
-               OR subject LIKE ?
+            WHERE content LIKE %s
+               OR title LIKE %s
+               OR subject LIKE %s
         """, (
             f"%{question}%",
             f"%{question}%",
@@ -272,6 +232,7 @@ def search_lectures(question):
 
     return results
 # إنشاء جلسة تسجيل الدخول
+
 def create_login_session(user_id):
     token = secrets.token_urlsafe(32)
     token_hash = hashlib.sha256(token.encode()).hexdigest()
@@ -283,7 +244,7 @@ def create_login_session(user_id):
         conn.execute("""
             INSERT INTO login_sessions
             (user_id, token_hash, expires_at, created_at)
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
         """, (
             user_id,
             token_hash,
@@ -292,7 +253,6 @@ def create_login_session(user_id):
         ))
 
     return token
-
 
 # التحقق من جلسة تسجيل الدخول
 def get_login_session(token):
@@ -306,8 +266,8 @@ def get_login_session(token):
             SELECT users.id, users.username, users.email, users.role
             FROM login_sessions
             JOIN users ON users.id = login_sessions.user_id
-            WHERE login_sessions.token_hash = ?
-              AND login_sessions.expires_at > ?
+            WHERE login_sessions.token_hash = %s
+              AND login_sessions.expires_at > %s
         """, (token_hash, datetime.now().isoformat())).fetchone()
 
     if session:
@@ -340,7 +300,7 @@ def create_admin_account():
 
         with get_connection() as conn:
             existing = conn.execute(
-                "SELECT id FROM users WHERE email = ?",
+                "SELECT id FROM users WHERE email = %s",
                 (ADMIN_EMAIL,)
             ).fetchone()
 
@@ -351,7 +311,7 @@ def create_admin_account():
                 conn.execute("""
                     INSERT INTO users
                     (username, email, password_hash, salt, role)
-                    VALUES (?, ?, ?, ?, ?)
+                    VALUES (%s, %s, %s, %s, %s)
                 """, (
                     "Admin",
                     ADMIN_EMAIL,
@@ -483,7 +443,7 @@ else:
 
         with get_connection() as conn:
             conn.execute(
-                "DELETE FROM login_sessions WHERE user_id = ?",
+                "UPDATE users SET role = 'doctor' WHERE id = %s",
                 (user["id"],)
             )
 
@@ -613,7 +573,7 @@ key=f"download_{result[6]}"
                         (title, university, department, stage,
                          subject, doctor, content, upload_date,
                          file_data, file_type)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """, (
                         uploaded_file.name,
                         university,
@@ -650,14 +610,14 @@ key=f"download_{result[6]}"
 
             if st.button("حذف المحاضرة"):
 
-                with get_connection() as conn:
-                    conn.execute(
-                        "DELETE FROM lectures WHERE id = ? AND doctor = ?",
-                        (selected_lecture[0], user["username"])
-                    )
+    with get_connection() as conn:
+        conn.execute(
+            "DELETE FROM lectures WHERE id = %s AND doctor = %s",
+            (selected_lecture[0], user["username"])
+        )
 
-                st.success("تم حذف المحاضرة بنجاح")
-                st.rerun()
+    st.success("تم حذف المحاضرة بنجاح")
+    st.rerun()
 
         else:
             st.info("لا توجد محاضرات مرفوعة من حسابك")
