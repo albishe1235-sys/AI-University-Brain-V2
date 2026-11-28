@@ -1,4 +1,3 @@
-
 import streamlit as st
 import extra_streamlit_components as stx
 import psycopg2
@@ -10,86 +9,87 @@ from io import BytesIO, StringIO
 from pypdf import PdfReader
 from docx import Document
 from pptx import Presentation
-# إعدادات المنصة
+
+إعدادات المنصة
 
 st.set_page_config(
-    page_title="AI University Brain",
-    page_icon="🎓",
-    layout="wide",
-    initial_sidebar_state="expanded"
+page_title="AI University Brain",
+page_icon="🎓",
+layout="wide",
+initial_sidebar_state="expanded"
 )
 cookie_manager = stx.CookieManager(key="auth_cookie_manager")
 st.markdown("""
-<style>
-/* جعل الكتابة باللون الأسود */
-.stApp,
-.stApp label,
-.stApp p,
-.stApp h1,
-.stApp h2,
-.stApp h3,
-.stTabs button,
-.stTextInput input,
-.stMarkdown {
-    color: #000000 !important;
-}
 
-.stTextInput input {
-    background-color: #FFFFFF !important;
-    border: 1px solid #999999 !important;
-}
-    .stApp {
-        background: #F4F7FC;
-        color: #172554;
-        direction: rtl;
-    }
-
-    [data-testid="stSidebar"] {
-        background: #102A56;
-    }
-
-    [data-testid="stSidebar"] * {
-        color: white;
-    }
-
-    h1, h2, h3 {
-        color: #163B70;
-        font-weight: 800;
-    }
-
-    .stButton > button {
-        background: linear-gradient(90deg, #2457A7, #477DE0);
-        color: white;
-        border: none;
-        border-radius: 12px;
-        padding: 10px 22px;
-        font-weight: bold;
-    }
-
-    .stButton > button:hover {
-        background: #173F7A;
-        color: white;
-        border: none;
-    }
-
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] {
-        border-radius: 10px;
-    }
-
-    [data-testid="stMetric"] {
-        background: white;
-        padding: 18px;
-        border-radius: 14px;
-        border: 1px solid #E0E8F5;
-    }
-
-    [data-testid="stExpander"] {
-        background: white;
-        border-radius: 12px;
-        border: 1px solid #DCE6F5;
-    }
-</style>
-""", unsafe_allow_html=True)
+<style>  
+/* جعل الكتابة باللون الأسود */  
+.stApp,  
+.stApp label,  
+.stApp p,  
+.stApp h1,  
+.stApp h2,  
+.stApp h3,  
+.stTabs button,  
+.stTextInput input,  
+.stMarkdown {  
+    color: #000000 !important;  
+}  
+  
+.stTextInput input {  
+    background-color: #FFFFFF !important;  
+    border: 1px solid #999999 !important;  
+}  
+    .stApp {  
+        background: #F4F7FC;  
+        color: #172554;  
+        direction: rtl;  
+    }  
+  
+    [data-testid="stSidebar"] {  
+        background: #102A56;  
+    }  
+  
+    [data-testid="stSidebar"] * {  
+        color: white;  
+    }  
+  
+    h1, h2, h3 {  
+        color: #163B70;  
+        font-weight: 800;  
+    }  
+  
+    .stButton > button {  
+        background: linear-gradient(90deg, #2457A7, #477DE0);  
+        color: white;  
+        border: none;  
+        border-radius: 12px;  
+        padding: 10px 22px;  
+        font-weight: bold;  
+    }  
+  
+    .stButton > button:hover {  
+        background: #173F7A;  
+        color: white;  
+        border: none;  
+    }  
+  
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] {  
+        border-radius: 10px;  
+    }  
+  
+    [data-testid="stMetric"] {  
+        background: white;  
+        padding: 18px;  
+        border-radius: 14px;  
+        border: 1px solid #E0E8F5;  
+    }  
+  
+    [data-testid="stExpander"] {  
+        background: white;  
+        border-radius: 12px;  
+        border: 1px solid #DCE6F5;  
+    }  
+</style>  """, unsafe_allow_html=True)
 
 import os
 
@@ -100,523 +100,558 @@ st.write("هل قاعدة البيانات موجودة:", os.path.exists(DB_NAM
 
 ADMIN_EMAIL = "b6927572@gmail.com"
 
+الاتصال بقاعدة البيانات
 
-# الاتصال بقاعدة البيانات
 class DatabaseConnection(psycopg2.extensions.connection):
-    def execute(self, query, vars=None):
-        cur = self.cursor()
-        cur.execute(query, vars)
-        return cur
-
+def execute(self, query, vars=None):
+cur = self.cursor()
+cur.execute(query, vars)
+return cur
 
 def get_connection():
-    return psycopg2.connect(
-        st.secrets["DATABASE_URL"],
-        connection_factory=DatabaseConnection
-    )
+return psycopg2.connect(
+st.secrets["DATABASE_URL"],
+connection_factory=DatabaseConnection
+)
 
+def الجداول
 
-# إنشاء الجداول
 def initialize_database():
-    pass
-            
+pass
+# جدول جلسات تسجيل الدخول
+conn.execute("""
+CREATE TABLE IF NOT EXISTS login_sessions (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+user_id INTEGER NOT NULL,
+token_hash TEXT NOT NULL UNIQUE,
+expires_at TEXT NOT NULL,
+created_at TEXT NOT NULL,
+FOREIGN KEY (user_id) REFERENCES users(id)
+)
+""")
+columns = [
+row[1] for row in conn.execute(
+"PRAGMA table_info(lectures)"
+).fetchall()
+]
 
-# تشفير كلمة المرور
+if "file_data" not in columns:  
+        conn.execute(  
+            "ALTER TABLE lectures ADD COLUMN file_data BLOB"  
+        )  
+
+    if "file_type" not in columns:  
+        conn.execute(  
+            "ALTER TABLE lectures ADD COLUMN file_type TEXT"  
+        )
+
+تشفير كلمة المرور
+
 def hash_password(password, salt):
-    return hashlib.pbkdf2_hmac(
-        "sha256",
-        password.encode(),
-        salt.encode(),
-        200000
-    ).hex()
+return hashlib.pbkdf2_hmac(
+"sha256",
+password.encode(),
+salt.encode(),
+200000
+).hex()
 
+إنشاء حساب
 
-# إنشاء حساب
 def register_user(username, email, password, role):
 
-    salt = secrets.token_hex(16)
-    password_hash = hash_password(password, salt)
+salt = secrets.token_hex(16)  
+password_hash = hash_password(password, salt)  
 
-    try:
-        with get_connection() as conn:
-            conn.execute("""
-                INSERT INTO users
-                (username, email, password_hash, salt, role)
-                VALUES (%s, %s, %s, %s, %s)
-            """, (
-                username,
-                email,
-                password_hash,
-                salt,
-                role
-            ))
+try:  
+    with get_connection() as conn:  
+        conn.execute("""  
+            INSERT INTO users  
+            (username, email, password_hash, salt, role)  
+            VALUES (%s, %s, %s, %s, %s)  
+        """, (  
+            username,  
+            email,  
+            password_hash,  
+            salt,  
+            role  
+        ))  
 
-        return True
+    return True  
 
-    except psycopg2.IntegrityError:
-        return False
+except psycopg2.IntegrityError:  
+    return False
 
+تسجيل الدخول
 
-# تسجيل الدخول
 def login_user(email, password):
 
-    with get_connection() as conn:
-        user = conn.execute("""
-            SELECT id, username, email, password_hash, salt, role
-            FROM users
-            WHERE email = %s
-        """, (email,)).fetchone()
+with get_connection() as conn:  
+    user = conn.execute("""  
+        SELECT id, username, email, password_hash, salt, role  
+        FROM users  
+        WHERE email = %s  
+    """, (email,)).fetchone()  
 
-    if user:
+if user:  
 
-        entered_hash = hash_password(password, user[4])
+    entered_hash = hash_password(password, user[4])  
 
-        if secrets.compare_digest(user[3], entered_hash):
+    if secrets.compare_digest(user[3], entered_hash):  
 
-            return {
-                "id": user[0],
-                "username": user[1],
-                "email": user[2],
-                "role": user[5]
-            }
+        return {  
+            "id": user[0],  
+            "username": user[1],  
+            "email": user[2],  
+            "role": user[5]  
+        }  
 
-    return None
+return None
 
-# قراءة الملفات واستخراج النص
+قراءة الملفات واستخراج النص
+
 def extract_text(uploaded_file):
-    file_type = uploaded_file.name.split(".")[-1].lower()
+file_type = uploaded_file.name.split(".")[-1].lower()
 
-    if file_type == "txt":
-        return uploaded_file.getvalue().decode("utf-8", errors="replace")
+if file_type == "txt":  
+    return uploaded_file.getvalue().decode("utf-8", errors="replace")  
 
-    elif file_type == "pdf":
-        pdf = PdfReader(BytesIO(uploaded_file.getvalue()))
-        return "\n".join(
-            page.extract_text() or "" for page in pdf.pages
-        )
+elif file_type == "pdf":  
+    pdf = PdfReader(BytesIO(uploaded_file.getvalue()))  
+    return "\n".join(  
+        page.extract_text() or "" for page in pdf.pages  
+    )  
 
-    elif file_type == "docx":
-        doc = Document(BytesIO(uploaded_file.getvalue()))
-        return "\n".join(p.text for p in doc.paragraphs)
+elif file_type == "docx":  
+    doc = Document(BytesIO(uploaded_file.getvalue()))  
+    return "\n".join(p.text for p in doc.paragraphs)  
 
-    elif file_type == "pptx":
-        presentation = Presentation(BytesIO(uploaded_file.getvalue()))
-        return "\n".join(
-            shape.text
-            for slide in presentation.slides
-            for shape in slide.shapes
-            if shape.has_text_frame
-        )
+elif file_type == "pptx":  
+    presentation = Presentation(BytesIO(uploaded_file.getvalue()))  
+    return "\n".join(  
+        shape.text  
+        for slide in presentation.slides  
+        for shape in slide.shapes  
+        if shape.has_text_frame  
+    )  
 
-    elif file_type == "csv":
-        content = uploaded_file.getvalue().decode("utf-8-sig", errors="replace")
-        reader = csv.reader(StringIO(content))
-        return "\n".join(" | ".join(row) for row in reader)
+elif file_type == "csv":  
+    content = uploaded_file.getvalue().decode("utf-8-sig", errors="replace")  
+    reader = csv.reader(StringIO(content))  
+    return "\n".join(" | ".join(row) for row in reader)  
 
-    return ""
-# البحث في المحاضرات
+return ""
+
+البحث في المحاضرات
+
 def search_lectures(question):
 
-    with get_connection() as conn:
-        results = conn.execute("""
-            SELECT title, subject, doctor, content, file_data, file_type, id
-            FROM lectures
-            WHERE content LIKE %s
-               OR title LIKE %s
-               OR subject LIKE %s
-        """, (
-            f"%{question}%",
-            f"%{question}%",
-            f"%{question}%"
-        )).fetchall()
+with get_connection() as conn:  
+    results = conn.execute("""  
+        SELECT title, subject, doctor, content, file_data, file_type, id  
+        FROM lectures  
+        WHERE content LIKE %s  
+           OR title LIKE %s  
+           OR subject LIKE %s  
+    """, (  
+        f"%{question}%",  
+        f"%{question}%",  
+        f"%{question}%"  
+    )).fetchall()  
 
-    return results
-# إنشاء جلسة تسجيل الدخول
+return results
+
+إنشاء جلسة تسجيل الدخول
 
 def create_login_session(user_id):
-    token = secrets.token_urlsafe(32)
-    token_hash = hashlib.sha256(token.encode()).hexdigest()
+token = secrets.token_urlsafe(32)
+token_hash = hashlib.sha256(token.encode()).hexdigest()
 
-    now = datetime.now()
-    expires = now + timedelta(days=30)
+now = datetime.now()  
+expires = now + timedelta(days=30)  
 
-    with get_connection() as conn:
-        conn.execute("""
-            INSERT INTO login_sessions
-            (user_id, token_hash, expires_at, created_at)
-            VALUES (%s, %s, %s, %s)
-        """, (
-            user_id,
-            token_hash,
-            expires.isoformat(),
-            now.isoformat()
-        ))
+with get_connection() as conn:  
+    conn.execute("""  
+        INSERT INTO login_sessions  
+        (user_id, token_hash, expires_at, created_at)  
+        VALUES (%s, %s, %s, %s)  
+    """, (  
+        user_id,  
+        token_hash,  
+        expires.isoformat(),  
+        now.isoformat()  
+    ))  
 
-    return token
+return token
 
-# التحقق من جلسة تسجيل الدخول
+التحقق من جلسة تسجيل الدخول
+
 def get_login_session(token):
-    if not token:
-        return None
+if not token:
+return None
 
-    token_hash = hashlib.sha256(token.encode()).hexdigest()
+token_hash = hashlib.sha256(token.encode()).hexdigest()  
 
-    with get_connection() as conn:
-        session = conn.execute("""
-            SELECT users.id, users.username, users.email, users.role
-            FROM login_sessions
-            JOIN users ON users.id = login_sessions.user_id
-            WHERE login_sessions.token_hash = %s
-              AND login_sessions.expires_at > %s
-        """, (token_hash, datetime.now().isoformat())).fetchone()
+with get_connection() as conn:  
+    session = conn.execute("""  
+        SELECT users.id, users.username, users.email, users.role  
+        FROM login_sessions  
+        JOIN users ON users.id = login_sessions.user_id  
+        WHERE login_sessions.token_hash = %s  
+          AND login_sessions.expires_at > %s  
+    """, (token_hash, datetime.now().isoformat())).fetchone()  
 
-    if session:
-        return {
-            "id": session[0],
-            "username": session[1],
-            "email": session[2],
-            "role": session[3]
-        }
+if session:  
+    return {  
+        "id": session[0],  
+        "username": session[1],  
+        "email": session[2],  
+        "role": session[3]  
+    }  
 
-    return None
+return None
 
-# تشغيل قاعدة البيانات
+تشغيل قاعدة البيانات
+
 initialize_database()
 with get_connection() as conn:
-    users_count = conn.execute(
-        "SELECT COUNT(*) FROM users"
-    ).fetchone()[0]
+users_count = conn.execute(
+"SELECT COUNT(*) FROM users"
+).fetchone()[0]
 
-    roles = conn.execute(
-        "SELECT role, COUNT(*) FROM users GROUP BY role"
-    ).fetchall()
+roles = conn.execute(  
+    "SELECT role, COUNT(*) FROM users GROUP BY role"  
+).fetchall()
 
 st.write("إجمالي الحسابات:", users_count)
 st.write("توزيع الحسابات:", roles)
 
 def create_admin_account():
-    try:
-        admin_password = st.secrets["ADMIN_PASSWORD"]
+try:
+admin_password = st.secrets["ADMIN_PASSWORD"]
 
-        with get_connection() as conn:
-            existing = conn.execute(
-                "SELECT id FROM users WHERE email = %s",
-                (ADMIN_EMAIL,)
-            ).fetchone()
+with get_connection() as conn:  
+        existing = conn.execute(  
+            "SELECT id FROM users WHERE email = %s",  
+            (ADMIN_EMAIL,)  
+        ).fetchone()  
 
-            if not existing:
-                salt = secrets.token_hex(16)
-                password_hash = hash_password(admin_password, salt)
+        if not existing:  
+            salt = secrets.token_hex(16)  
+            password_hash = hash_password(admin_password, salt)  
 
-                conn.execute("""
-                    INSERT INTO users
-                    (username, email, password_hash, salt, role)
-                    VALUES (%s, %s, %s, %s, %s)
-                """, (
-                    "Admin",
-                    ADMIN_EMAIL,
-                    password_hash,
-                    salt,
-                    "admin"
-                ))
+            conn.execute("""  
+                INSERT INTO users  
+                (username, email, password_hash, salt, role)  
+                VALUES (%s, %s, %s, %s, %s)  
+            """, (  
+                "Admin",  
+                ADMIN_EMAIL,  
+                password_hash,  
+                salt,  
+                "admin"  
+            ))  
 
-    except Exception as e:
-        st.error(f"خطأ إعداد الأدمن: {e}")
-
+except Exception as e:  
+    st.error(f"خطأ إعداد الأدمن: {e}")
 
 create_admin_account()
 
-# واجهة المنصة
+واجهة المنصة
+
 st.title("🎓 AI University Brain")
 st.caption("منصة المعرفة الذكية للجامعة")
 st.divider()
 
+حالة المستخدم
 
-# حالة المستخدم
 if "user" not in st.session_state:
-    st.session_state.user = None
+st.session_state.user = None
 
 if st.session_state.user is None:
-    saved_token = cookie_manager.get("auth_token")
-    restored_user = get_login_session(saved_token)
+saved_token = cookie_manager.get("auth_token")
+restored_user = get_login_session(saved_token)
 
-    if restored_user:
-        st.session_state.user = restored_user
+if restored_user:  
+    st.session_state.user = restored_user
 
-# صفحة الدخول والتسجيل
+صفحة الدخول والتسجيل
 
 if st.session_state.user is None:
 
-    st.markdown("""
-        <div style="text-align:center; padding:35px 10px 20px;">
-            <div style="font-size:55px;">🎓</div>
-            <h1 style="color:#163B70; font-size:36px;">
-                AI University Brain
-            </h1>
-            <p style="color:#64748B; font-size:17px;">
-                منصتك الذكية لإدارة المحاضرات والبحث العلمي
-            </p>
-            
-        </div>
-    """, unsafe_allow_html=True)
+st.markdown("""  
+    <div style="text-align:center; padding:35px 10px 20px;">  
+        <div style="font-size:55px;">🎓</div>  
+        <h1 style="color:#163B70; font-size:36px;">  
+            AI University Brain  
+        </h1>  
+        <p style="color:#64748B; font-size:17px;">  
+            منصتك الذكية لإدارة المحاضرات والبحث العلمي  
+        </p>  
+          
+    </div>  
+""", unsafe_allow_html=True)  
 
-    space1, center, space2 = st.columns([1, 2, 1])
+space1, center, space2 = st.columns([1, 2, 1])  
 
-    with center:
+with center:  
 
-        st.markdown("""
-            <div style="
-                background:white;
-                padding:12px;
-                border-radius:16px;
-                text-align:center;
-                border:1px solid #DCE6F5;
-                margin-bottom:15px;">
-                <h3 style="color:#163B70;">مرحباً بك 👋</h3>
-                <p style="color:#64748B;">
-                    سجّل دخولك أو أنشئ حساباً جديداً للمتابعة
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+    st.markdown("""  
+        <div style="  
+            background:white;  
+            padding:12px;  
+            border-radius:16px;  
+            text-align:center;  
+            border:1px solid #DCE6F5;  
+            margin-bottom:15px;">  
+            <h3 style="color:#163B70;">مرحباً بك 👋</h3>  
+            <p style="color:#64748B;">  
+                سجّل دخولك أو أنشئ حساباً جديداً للمتابعة  
+            </p>  
+        </div>  
+    """, unsafe_allow_html=True)  
 
-        login_tab, register_tab = st.tabs([
-            "🔐 تسجيل الدخول",
-            "📝 إنشاء حساب جديد"
-        ])
+    login_tab, register_tab = st.tabs([  
+        "🔐 تسجيل الدخول",  
+        "📝 إنشاء حساب جديد"  
+    ])  
 
-                # تسجيل الدخول
-        with login_tab:
+            # تسجيل الدخول  
+    with login_tab:  
 
-            st.subheader("أهلاً بعودتك")
+        st.subheader("أهلاً بعودتك")  
 
-            email = st.text_input(
-                "البريد الإلكتروني",
-                key="login_email"
-            )
+        email = st.text_input(  
+            "البريد الإلكتروني",  
+            key="login_email"  
+        )  
 
-            password = st.text_input(
-                "كلمة المرور",
-                type="password",
-                key="login_password"
-            )
+        password = st.text_input(  
+            "كلمة المرور",  
+            type="password",  
+            key="login_password"  
+        )  
 
-            if st.button("دخول إلى المنصة", use_container_width=True):
+        if st.button("دخول إلى المنصة", use_container_width=True):  
 
-                user = login_user(
-                    email.strip().lower(),
-                    password
+            user = login_user(  
+                email.strip().lower(),  
+                password  
+            )  
+
+            if user:  
+                token = create_login_session(user["id"])  
+
+                cookie_manager.set(  
+                    "auth_token",  
+                    token,  
+                    expires_at=datetime.now() + timedelta(days=30)  
+                )  
+
+                st.session_state.user = user  
+                st.rerun()  
+
+            else:  
+                st.error(  
+                    "البريد الإلكتروني أو كلمة المرور غير صحيحة"  
                 )
 
-                if user:
-                    token = create_login_session(user["id"])
+لوحة المستخدم
 
-                    cookie_manager.set(
-                        "auth_token",
-                        token,
-                        expires_at=datetime.now() + timedelta(days=30)
-                    )
-
-                    st.session_state.user = user
-                    st.rerun()
-
-                else:
-                    st.error(
-                        "البريد الإلكتروني أو كلمة المرور غير صحيحة"
-                    )
-    
-# لوحة المستخدم
 else:
 
-    user = st.session_state.user
+user = st.session_state.user  
 
-    st.success(f"أهلاً بك، {user['username']}")
+st.success(f"أهلاً بك، {user['username']}")  
 
-    st.write(
-        "نوع الحساب:",
-        "أدمن" if user["role"] == "admin"
-        else "طالب" if user["role"] == "student"
-        else "دكتور"
-    )
-     
-    if st.button("تسجيل الخروج"):
-        cookie_manager.delete("auth_token")
+st.write(  
+    "نوع الحساب:",  
+    "أدمن" if user["role"] == "admin"  
+    else "طالب" if user["role"] == "student"  
+    else "دكتور"  
+)  
+   
+if st.button("تسجيل الخروج"):  
+    cookie_manager.delete("auth_token")  
 
-        with get_connection() as conn:
-            conn.execute(
-                "UPDATE users SET role = 'doctor' WHERE id = %s",
-                (user["id"],)
-            )
+    with get_connection() as conn:  
+        conn.execute(  
+            "DELETE FROM login_sessions WHERE user_id = ?",  
+            (user["id"],)  
+        )  
 
-        st.session_state.user = None
-        st.rerun()
+    st.session_state.user = None  
+    st.rerun()  
 
-    if user["role"] == "admin":
-        st.divider()
-        st.header("🛠️ لوحة تحكم الأدمن")
-        st.success("أنت مسؤول المنصة")
+if user["role"] == "admin":  
+    st.divider()  
+    st.header("🛠️ لوحة تحكم الأدمن")  
+    st.success("أنت مسؤول المنصة")  
 
-        with get_connection() as conn:
-            users_count = conn.execute(
-                "SELECT COUNT(*) FROM users"
-            ).fetchone()[0]
+    with get_connection() as conn:  
+        users_count = conn.execute(  
+            "SELECT COUNT(*) FROM users"  
+        ).fetchone()[0]  
 
-            lectures_count = conn.execute(
-                "SELECT COUNT(*) FROM lectures"
-            ).fetchone()[0]
+        lectures_count = conn.execute(  
+            "SELECT COUNT(*) FROM lectures"  
+        ).fetchone()[0]  
 
-        col1, col2 = st.columns(2)
-        col1.metric("عدد المستخدمين", users_count)
-        col2.metric("عدد المحاضرات", lectures_count)
-        st.divider()
-        st.subheader("👨‍🏫 إدارة صلاحيات الدكاترة")
+    col1, col2 = st.columns(2)  
+    col1.metric("عدد المستخدمين", users_count)  
+    col2.metric("عدد المحاضرات", lectures_count)  
+    st.divider()  
+    st.subheader("👨‍🏫 إدارة صلاحيات الدكاترة")  
 
-        with get_connection() as conn:
-            students = conn.execute(
-                "SELECT id, username, email FROM users WHERE role = 'student'"
-            ).fetchall()
+    with get_connection() as conn:  
+        students = conn.execute(  
+            "SELECT id, username, email FROM users WHERE role = 'student'"  
+        ).fetchall()  
 
-        if students:
-            selected_student = st.selectbox(
-                "اختر الطالب لمنحه صلاحية دكتور",
-                students,
-                format_func=lambda x: f"{x[1]} - {x[2]}"
-            )
-        if st.button("منح صلاحية دكتور"):
-                with get_connection() as conn:
-                    conn.execute(
-                        "UPDATE users SET role = 'doctor' WHERE id = ?",
-                        (selected_student[0],)
-                    )
+    if students:  
+        selected_student = st.selectbox(  
+            "اختر الطالب لمنحه صلاحية دكتور",  
+            students,  
+            format_func=lambda x: f"{x[1]} - {x[2]}"  
+        )  
+    if st.button("منح صلاحية دكتور"):  
+            with get_connection() as conn:  
+                conn.execute(  
+                    "UPDATE users SET role = 'doctor' WHERE id = ?",  
+                    (selected_student[0],)  
+                )  
 
-                st.success(
-                    f"تم منح {selected_student[1]} صلاحية دكتور"
-                )
-                st.rerun()
+            st.success(  
+                f"تم منح {selected_student[1]} صلاحية دكتور"  
+            )  
+            st.rerun()  
 
-    
-    st.divider()
+  
+st.divider()  
 
-    st.subheader("🔎 البحث في المحاضرات")
+st.subheader("🔎 البحث في المحاضرات")  
 
-    question = st.text_input(
-        "اكتب كلمة أو سؤالاً للبحث"
-    )
+question = st.text_input(  
+    "اكتب كلمة أو سؤالاً للبحث"  
+)  
 
-    if st.button("بحث"):
+if st.button("بحث"):  
 
-        if question.strip():
+    if question.strip():  
 
-            results = search_lectures(question.strip())
+        results = search_lectures(question.strip())  
 
-            if results:
+        if results:  
 
-                for result in results:
+            for result in results:  
 
-                    with st.expander(result[0]):
+                with st.expander(result[0]):  
 
-                        st.write("المادة:", result[1])
-                        st.write("الدكتور:", result[2])
-                        st.write("محتوى المحاضرة:")
-                        st.write(result[3])
+                    st.write("المادة:", result[1])  
+                    st.write("الدكتور:", result[2])  
+                    st.write("محتوى المحاضرة:")  
+                    st.write(result[3])  
 
-                        if result[4]:
-                            mime_types = {
-                                "pdf": "application/pdf",
-                                "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                                "txt": "text/plain",
-                                "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                                "csv": "text/csv"
-                            }
+                    if result[4]:  
+                        mime_types = {  
+                            "pdf": "application/pdf",  
+                            "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",  
+                            "txt": "text/plain",  
+                            "pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",  
+                            "csv": "text/csv"  
+                        }  
 
-                            st.download_button(
-                                label="📥 تحميل المحاضرة الأصلية",
-                                data=result[4],
-                                file_name=result[0],
-                                mime=mime_types.get(result[5], "application/octet-stream"),
+                        st.download_button(  
+                            label="📥 تحميل المحاضرة الأصلية",  
+                            data=result[4],  
+                            file_name=result[0],  
+                            mime=mime_types.get(result[5], "application/octet-stream"),
+
 key=f"download_{result[6]}"
-                            )
+)
 
-            else:
-                st.warning("لم يتم العثور على نتائج")
+else:  
+            st.warning("لم يتم العثور على نتائج")  
 
-        # رفع المحاضرات للدكتور
-    if user["role"] == "doctor":
+    # رفع المحاضرات للدكتور  
+if user["role"] == "doctor":  
 
-        st.divider()
-        st.subheader("📤 رفع محاضرة")
+    st.divider()  
+    st.subheader("📤 رفع محاضرة")  
 
-        uploaded_file = st.file_uploader(
-            "اختر ملف المحاضرة",
-            type=["pdf", "docx", "txt", "pptx", "csv"]
-        )
+    uploaded_file = st.file_uploader(  
+        "اختر ملف المحاضرة",  
+        type=["pdf", "docx", "txt", "pptx", "csv"]  
+    )  
 
-        university = st.text_input(
-            "الجامعة",
-            value="University of the Future"
-        )
+    university = st.text_input(  
+        "الجامعة",  
+        value="University of the Future"  
+    )  
 
-        department = st.text_input("القسم")
-        stage = st.text_input("المرحلة")
-        subject = st.text_input("المادة")
+    department = st.text_input("القسم")  
+    stage = st.text_input("المرحلة")  
+    subject = st.text_input("المادة")  
 
-        if st.button("رفع وحفظ المحاضرة"):
+    if st.button("رفع وحفظ المحاضرة"):  
 
-            if uploaded_file and department and stage and subject:
+        if uploaded_file and department and stage and subject:  
 
-                content = extract_text(uploaded_file)
-                file_data = uploaded_file.getvalue()
-                file_type = uploaded_file.name.split(".")[-1].lower()
+            content = extract_text(uploaded_file)  
+            file_data = uploaded_file.getvalue()  
+            file_type = uploaded_file.name.split(".")[-1].lower()  
 
-                with get_connection() as conn:
-                    conn.execute("""
-                        INSERT INTO lectures
-                        (title, university, department, stage,
-                         subject, doctor, content, upload_date,
-                         file_data, file_type)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    """, (
-                        uploaded_file.name,
-                        university,
-                        department,
-                        stage,
-                        subject,
-                        user["username"],
-                        content,
-                        datetime.now().isoformat(),
-                        file_data,
-                        file_type
-                    ))
+            with get_connection() as conn:  
+                conn.execute("""  
+                    INSERT INTO lectures  
+                    (title, university, department, stage,  
+                     subject, doctor, content, upload_date,  
+                     file_data, file_type)  
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)  
+                """, (  
+                    uploaded_file.name,  
+                    university,  
+                    department,  
+                    stage,  
+                    subject,  
+                    user["username"],  
+                    content,  
+                    datetime.now().isoformat(),  
+                    file_data,  
+                    file_type  
+                ))  
 
-                st.success("تم رفع المحاضرة وحفظها بنجاح")
+            st.success("تم رفع المحاضرة وحفظها بنجاح")  
 
-            else:
-               st.warning("يرجى اختيار الملف وإكمال المعلومات")
-        st.divider()
-        st.subheader("🗑️ حذف محاضرة")
+        else:  
+           st.warning("يرجى اختيار الملف وإكمال المعلومات")  
+    st.divider()  
+    st.subheader("🗑️ حذف محاضرة")  
 
-        with get_connection() as conn:
-          doctor_lectures = conn.execute(
-                "SELECT id, title, subject FROM lectures WHERE doctor = %s",
-                (user["username"],)
-            ).fetchall()
+    with get_connection() as conn:  
+        doctor_lectures = conn.execute(  
+            "SELECT id, title, subject FROM lectures WHERE doctor = ?",  
+            (user["username"],)  
+        ).fetchall()  
 
-        if doctor_lectures:
+    if doctor_lectures:  
 
-            selected_lecture = st.selectbox(
-                "اختر المحاضرة التي تريد حذفها",
-                doctor_lectures,
-                format_func=lambda x: f"{x[1]} - {x[2]}"
-            )
+        selected_lecture = st.selectbox(  
+            "اختر المحاضرة التي تريد حذفها",  
+            doctor_lectures,  
+            format_func=lambda x: f"{x[1]} - {x[2]}"  
+        )  
 
-            if st.button("حذف المحاضرة"):
-                with get_connection() as conn:
-                    conn.execute(
-                        "DELETE FROM lectures WHERE id = %s AND doctor = %s",
-                        (selected_lecture[0], user["username"])
-                    )
+        if st.button("حذف المحاضرة"):  
 
-                st.success("تم حذف المحاضرة بنجاح")
-                st.rerun()
+            with get_connection() as conn:  
+                conn.execute(  
+                    "DELETE FROM lectures WHERE id = ? AND doctor = ?",  
+                    (selected_lecture[0], user["username"])  
+                )  
 
-        else:
-            st.info("لا توجد محاضرات مرفوعة من حسابك")
+            st.success("تم حذف المحاضرة بنجاح")  
+            st.rerun()  
+
+    else:  
+        st.info("لا توجد محاضرات مرفوعة من حسابك")
+
