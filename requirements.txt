@@ -3,3 +3,4 @@ pypdf
 python-docx
 python-pptx
 extra-streamlit-components
+psycopg2-binary
