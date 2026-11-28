@@ -1,3 +1,4 @@
+
 import streamlit as st
 import extra_streamlit_components as stx
 import psycopg2
@@ -100,7 +101,7 @@ st.write("هل قاعدة البيانات موجودة:", os.path.exists(DB_NAM
 
 ADMIN_EMAIL = "b6927572@gmail.com"
 
-الاتصال بقاعدة البيانات
+#الاتصال بقاعدة البيانات
 
 class DatabaseConnection(psycopg2.extensions.connection):
 def execute(self, query, vars=None):
@@ -145,7 +146,7 @@ if "file_data" not in columns:
             "ALTER TABLE lectures ADD COLUMN file_type TEXT"  
         )
 
-تشفير كلمة المرور
+#تشفير كلمة المرور
 
 def hash_password(password, salt):
 return hashlib.pbkdf2_hmac(
@@ -155,7 +156,7 @@ salt.encode(),
 200000
 ).hex()
 
-إنشاء حساب
+#إنشاء حساب
 
 def register_user(username, email, password, role):
 
@@ -181,7 +182,7 @@ try:
 except psycopg2.IntegrityError:  
     return False
 
-تسجيل الدخول
+#تسجيل الدخول
 
 def login_user(email, password):
 
@@ -207,7 +208,7 @@ if user:
 
 return None
 
-قراءة الملفات واستخراج النص
+#قراءة الملفات واستخراج النص
 
 def extract_text(uploaded_file):
 file_type = uploaded_file.name.split(".")[-1].lower()
@@ -241,7 +242,7 @@ elif file_type == "csv":
 
 return ""
 
-البحث في المحاضرات
+#البحث في المحاضرات
 
 def search_lectures(question):
 
@@ -260,7 +261,7 @@ with get_connection() as conn:
 
 return results
 
-إنشاء جلسة تسجيل الدخول
+#إنشاء جلسة تسجيل الدخول
 
 def create_login_session(user_id):
 token = secrets.token_urlsafe(32)
@@ -283,7 +284,7 @@ with get_connection() as conn:
 
 return token
 
-التحقق من جلسة تسجيل الدخول
+#التحقق من جلسة تسجيل الدخول
 
 def get_login_session(token):
 if not token:
@@ -310,7 +311,7 @@ if session:
 
 return None
 
-تشغيل قاعدة البيانات
+#تشغيل قاعدة البيانات
 
 initialize_database()
 with get_connection() as conn:
@@ -356,13 +357,13 @@ except Exception as e:
 
 create_admin_account()
 
-واجهة المنصة
+#واجهة المنصة
 
 st.title("🎓 AI University Brain")
 st.caption("منصة المعرفة الذكية للجامعة")
 st.divider()
 
-حالة المستخدم
+#حالة المستخدم
 
 if "user" not in st.session_state:
 st.session_state.user = None
@@ -374,7 +375,7 @@ restored_user = get_login_session(saved_token)
 if restored_user:  
     st.session_state.user = restored_user
 
-صفحة الدخول والتسجيل
+#صفحة الدخول والتسجيل
 
 if st.session_state.user is None:
 
@@ -455,7 +456,7 @@ with center:
                     "البريد الإلكتروني أو كلمة المرور غير صحيحة"  
                 )
 
-لوحة المستخدم
+#لوحة المستخدم
 
 else:
 
