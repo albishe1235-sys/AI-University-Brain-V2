@@ -10,7 +10,7 @@ from pypdf import PdfReader
 from docx import Document
 from pptx import Presentation
 
-إعدادات المنصة
+#إعدادات المنصة
 
 st.set_page_config(
 page_title="AI University Brain",
