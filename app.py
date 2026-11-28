@@ -322,6 +322,17 @@ def get_login_session(token):
 
 # تشغيل قاعدة البيانات
 initialize_database()
+with get_connection() as conn:
+    users_count = conn.execute(
+        "SELECT COUNT(*) FROM users"
+    ).fetchone()[0]
+
+    roles = conn.execute(
+        "SELECT role, COUNT(*) FROM users GROUP BY role"
+    ).fetchall()
+
+st.write("إجمالي الحسابات:", users_count)
+st.write("توزيع الحسابات:", roles)
 
 def create_admin_account():
     try:
