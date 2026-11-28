@@ -343,9 +343,8 @@ def create_admin_account():
                     "admin"
                 ))
 
-    except Exception:
-        st.error("تعذر إعداد حساب الأدمن. راجع إعدادات المنصة.")
-
+    except Exception as e:
+    st.error(f"خطأ إعداد الأدمن: {e}")
 
 create_admin_account()
 
