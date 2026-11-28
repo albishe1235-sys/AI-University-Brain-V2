@@ -594,9 +594,9 @@ key=f"download_{result[6]}"
         st.divider()
         st.subheader("🗑️ حذف محاضرة")
 
-        with get_connection() as conn:
+                with get_connection() as conn:
             doctor_lectures = conn.execute(
-                "SELECT id, title, subject FROM lectures WHERE doctor = ?",
+                "SELECT id, title, subject FROM lectures WHERE doctor = %s",
                 (user["username"],)
             ).fetchall()
 
@@ -608,15 +608,15 @@ key=f"download_{result[6]}"
                 format_func=lambda x: f"{x[1]} - {x[2]}"
             )
 
-  if st.button("حذف المحاضرة"):
-    with get_connection() as conn:
-        conn.execute(
-            "DELETE FROM lectures WHERE id = %s AND doctor = %s",
-            (selected_lecture[0], user["username"])
-        )
+            if st.button("حذف المحاضرة"):
+                with get_connection() as conn:
+                    conn.execute(
+                        "DELETE FROM lectures WHERE id = %s AND doctor = %s",
+                        (selected_lecture[0], user["username"])
+                    )
 
-    st.success("تم حذف المحاضرة بنجاح")
-    st.rerun() 
+                st.success("تم حذف المحاضرة بنجاح")
+                st.rerun()
 
         else:
             st.info("لا توجد محاضرات مرفوعة من حسابك")
