@@ -91,7 +91,12 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+import os
+
 DB_NAME = "university.db"
+
+st.write("مسار قاعدة البيانات:", os.path.abspath(DB_NAME))
+st.write("هل قاعدة البيانات موجودة:", os.path.exists(DB_NAME))
 
 ADMIN_EMAIL = "b6927572@gmail.com"
 
