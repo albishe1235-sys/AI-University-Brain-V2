@@ -342,9 +342,8 @@ def create_admin_account():
                     salt,
                     "admin"
                 ))
-
-    except Exception as e:
-    st.error(f"خطأ إعداد الأدمن: {e}")
+        except Exception as e:
+          st.error(f"خطأ إعداد الأدمن: {e}")
 
 create_admin_account()
 
