@@ -594,8 +594,8 @@ key=f"download_{result[6]}"
         st.divider()
         st.subheader("🗑️ حذف محاضرة")
 
-                with get_connection() as conn:
-            doctor_lectures = conn.execute(
+        with get_connection() as conn:
+          doctor_lectures = conn.execute(
                 "SELECT id, title, subject FROM lectures WHERE doctor = %s",
                 (user["username"],)
             ).fetchall()
