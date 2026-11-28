@@ -608,8 +608,7 @@ key=f"download_{result[6]}"
                 format_func=lambda x: f"{x[1]} - {x[2]}"
             )
 
-            if st.button("حذف المحاضرة"):
-
+  if st.button("حذف المحاضرة"):
     with get_connection() as conn:
         conn.execute(
             "DELETE FROM lectures WHERE id = %s AND doctor = %s",
@@ -617,7 +616,7 @@ key=f"download_{result[6]}"
         )
 
     st.success("تم حذف المحاضرة بنجاح")
-    st.rerun()
+    st.rerun() 
 
         else:
             st.info("لا توجد محاضرات مرفوعة من حسابك")
